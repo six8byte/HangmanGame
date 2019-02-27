@@ -18,11 +18,15 @@ public class MainWindow extends JFrame {
         //label.setIcon(new ImageIcon("res/r11.png"));
         //panel.add(label);
 
+        Lexicon lex = new Lexicon();
+        lex.msg();
+
         setTitle("Mężczyzna na szubienicy");
         setSize(1000, 1000);
         setLayout(null);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setResizable(false);
 
         var wordButtons = setWordButtons();
         for (int i = 0; i < wordButtons.length; i++) {
@@ -42,7 +46,8 @@ public class MainWindow extends JFrame {
         for (int i = 0; i < letters.length; i++) {
             var button = new JButton();
             button.setName(Character.toString(letters[i]));
-            button.setSize(30,30);
+            button.setSize(20,20);
+            button.setMargin(new Insets(0, 0, 0, 0));
             buttons[i] = button;
         }
         positionButtons(buttons, 700);
@@ -57,10 +62,13 @@ public class MainWindow extends JFrame {
     }
 
     private void positionButtons(JButton[] buttons, int y, int rows){
-        var xes = calculateX(buttons.length);
+        var xes = calculateX(buttons.length, rows);
         int placeToSplit = buttons.length/rows;
         int rowsSpacing = 50;
         for (int i = 0; i < buttons.length; i++) {
+            if (i%placeToSplit == 0) {
+                y += 50;
+            }
             buttons[i].setLocation(xes[i], y);
         }
     }
@@ -77,8 +85,11 @@ public class MainWindow extends JFrame {
     private int[] calculateX(int count, int rows) {
         int[] xes = new int[count];
         int shift = 900/count*rows;
-        for (int i = 1; i < count/2+1; i++) {
-            xes[i-1] = i*shift;
+        int splitter = count/rows;
+        for (int i = 0; i < rows; i++) {
+            for (int x = 1; x <= splitter; x++) {
+                xes[x - 1 + i*splitter] = x * shift;
+            }
         }
         return xes;
     }
@@ -90,11 +101,12 @@ public class MainWindow extends JFrame {
         for (int i = 65; i < 91; i++) {
             var button = new JButton();
             button.setText(Character.toString(i));
-            button.setSize(20,20);
+            button.setSize(30,30);
+            button.setMargin(new Insets(0, 0, 0, 0));
             buttons[i-65] = button;
         }
 
-        positionButtons(buttons, 800);
+        positionButtons(buttons, 800, 2);
         return buttons;
     }
 
