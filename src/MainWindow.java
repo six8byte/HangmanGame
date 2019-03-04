@@ -1,15 +1,20 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 
 public class MainWindow extends JFrame {
 
-    private String choosenLetter;
+
+    private JButton[] wordButtons;
+    private JButton[] alphabet;
+    private int lettersGuessed = 0;
+    private int badGuesses = 0;
 
     public MainWindow(){
 
         initUI();
-        setWordButtons();
     }
 
     private void initUI(){
@@ -28,15 +33,16 @@ public class MainWindow extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
 
-        var wordButtons = setWordButtons();
+        wordButtons = setWordButtons();
         for (int i = 0; i < wordButtons.length; i++) {
             add(wordButtons[i]);
         }
 
-        var alphabet = setAlphabet();
+        alphabet = setAlphabet();
         for (int i = 0; i < alphabet.length; i++) {
             add(alphabet[i]);
         }
+
     }
 
     private JButton[] setWordButtons(){
@@ -45,9 +51,10 @@ public class MainWindow extends JFrame {
         JButton[] buttons = new JButton[letters.length];
         for (int i = 0; i < letters.length; i++) {
             var button = new JButton();
-            button.setName(Character.toString(letters[i]));
-            button.setSize(20,20);
+            button.setText(Character.toString(letters[i]));
+            button.setSize(30,30);
             button.setMargin(new Insets(0, 0, 0, 0));
+            button.setVisible(false);
             buttons[i] = button;
         }
         positionButtons(buttons, 700);
@@ -96,6 +103,28 @@ public class MainWindow extends JFrame {
 
     private JButton[] setAlphabet() {
 
+
+        ActionListener listener = (ActionEvent e) -> {
+            final JButton source = (JButton) e.getSource();
+
+            for (int i = 0; i < wordButtons.length; i++) {
+                if (source.getText().equals(wordButtons[i].getText())) {
+                    wordButtons[i].setVisible(true);
+                    lettersGuessed++;
+                }
+                else{
+                    badGuesses++;
+                    if(badGuesses > 11){
+
+                        badGuesses = 0;
+                    }
+                    else {
+                        String filename = "r" + Integer.toString(badGuesses) + ".png";
+                    }
+                }
+            }
+        };
+
         JButton[] buttons = new JButton[91-65];
 
         for (int i = 65; i < 91; i++) {
@@ -103,6 +132,7 @@ public class MainWindow extends JFrame {
             button.setText(Character.toString(i));
             button.setSize(30,30);
             button.setMargin(new Insets(0, 0, 0, 0));
+            button.addActionListener(listener);
             buttons[i-65] = button;
         }
 
@@ -110,12 +140,14 @@ public class MainWindow extends JFrame {
         return buttons;
     }
 
+
     public static void main(String[] args) {
 
         EventQueue.invokeLater(() -> {
             var exe = new MainWindow();
             exe.setVisible(true);
         });
+
     }
 
 

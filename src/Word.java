@@ -2,7 +2,7 @@ import java.util.Random;
 
 public class Word {
 
-    private String word = "oscylator";
+    private String word = "OSCYLATOR";
     private char[] letters;
     private char[] lettersPackage;
 
