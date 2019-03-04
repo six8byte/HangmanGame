@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 
 public class MainWindow extends JFrame {
@@ -9,19 +10,22 @@ public class MainWindow extends JFrame {
 
     private JButton[] wordButtons;
     private JButton[] alphabet;
+    private ArrayList<JButton> guessedButtons;
+    private JLabel paintingLabel;
     private int lettersGuessed = 0;
     private int badGuesses = 0;
 
-    public MainWindow(){
+    private MainWindow() {
 
         initUI();
     }
 
-    private void initUI(){
-        //JPanel panel = (JPanel)getContentPane();
-        //JLabel label = new JLabel();
-        //label.setIcon(new ImageIcon("res/r11.png"));
-        //panel.add(label);
+    private void initUI() {
+        paintingLabel = new JLabel("");
+        paintingLabel.setBounds(250, 10, 500, 600);
+        setImage();
+        getContentPane().add(paintingLabel);
+
 
         Lexicon lex = new Lexicon();
         lex.msg();
@@ -45,35 +49,41 @@ public class MainWindow extends JFrame {
 
     }
 
-    private JButton[] setWordButtons(){
+    private void setImage() {
+        String filename = "r" + badGuesses + ".png";
+        Image image = new ImageIcon(this.getClass().getResource(filename)).getImage();
+        Image newImage = image.getScaledInstance(500, 600, Image.SCALE_DEFAULT);
+        paintingLabel.setIcon(new ImageIcon(newImage));
+    }
+
+    private JButton[] setWordButtons() {
         Word word = new Word();
         char[] letters = word.getLettersPackage();
         JButton[] buttons = new JButton[letters.length];
         for (int i = 0; i < letters.length; i++) {
             var button = new JButton();
-            button.setText(Character.toString(letters[i]));
-            button.setSize(30,30);
+            button.setName(Character.toString(letters[i]));
+            button.setSize(30, 30);
             button.setMargin(new Insets(0, 0, 0, 0));
-            button.setVisible(false);
             buttons[i] = button;
         }
         positionButtons(buttons, 700);
         return buttons;
     }
 
-    private void positionButtons(JButton[] buttons, int y){
+    private void positionButtons(JButton[] buttons, int y) {
         var xes = calculateX(buttons.length);
         for (int i = 0; i < buttons.length; i++) {
             buttons[i].setLocation(xes[i], y);
         }
     }
 
-    private void positionButtons(JButton[] buttons, int y, int rows){
+    private void positionButtons(JButton[] buttons, int y, int rows) {
         var xes = calculateX(buttons.length, rows);
-        int placeToSplit = buttons.length/rows;
+        int placeToSplit = buttons.length / rows;
         int rowsSpacing = 50;
         for (int i = 0; i < buttons.length; i++) {
-            if (i%placeToSplit == 0) {
+            if (i % placeToSplit == 0) {
                 y += 50;
             }
             buttons[i].setLocation(xes[i], y);
@@ -82,20 +92,20 @@ public class MainWindow extends JFrame {
 
     private int[] calculateX(int count) {
         int[] xes = new int[count];
-        int shift = 900/count;
-        for (int i = 1; i < count+1; i++) {
-            xes[i-1] = i*shift;
+        int shift = 900 / count;
+        for (int i = 1; i < count + 1; i++) {
+            xes[i - 1] = i * shift;
         }
         return xes;
     }
 
     private int[] calculateX(int count, int rows) {
         int[] xes = new int[count];
-        int shift = 900/count*rows;
-        int splitter = count/rows;
+        int shift = 900 / count * rows;
+        int splitter = count / rows;
         for (int i = 0; i < rows; i++) {
             for (int x = 1; x <= splitter; x++) {
-                xes[x - 1 + i*splitter] = x * shift;
+                xes[x - 1 + i * splitter] = x * shift;
             }
         }
         return xes;
@@ -107,39 +117,57 @@ public class MainWindow extends JFrame {
         ActionListener listener = (ActionEvent e) -> {
             final JButton source = (JButton) e.getSource();
 
+            int tmpLettersGuessed = lettersGuessed;
             for (int i = 0; i < wordButtons.length; i++) {
-                if (source.getText().equals(wordButtons[i].getText())) {
-                    wordButtons[i].setVisible(true);
+                if (source.getText().equals(wordButtons[i].getName())) {
+                    wordButtons[i].setText(wordButtons[i].getName());
                     lettersGuessed++;
                 }
-                else{
-                    badGuesses++;
-                    if(badGuesses > 11){
+            }
+            if (tmpLettersGuessed == lettersGuessed) {
+                badGuesses++;
+            }
 
-                        badGuesses = 0;
-                    }
-                    else {
-                        String filename = "r" + Integer.toString(badGuesses) + ".png";
-                    }
+            if (badGuesses > 11) {
+                resetCounters();
+                setImage();
+                for (JButton x : wordButtons) {
+                    x.setText("");
                 }
+                JOptionPane.showMessageDialog(null, "GAME OVER");
+
+            } else {
+                setImage();
+            }
+            if (lettersGuessed == wordButtons.length + 1) {
+                resetCounters();
+                setImage();
+                for (JButton x : wordButtons) {
+                    x.setText("");
+                }
+                JOptionPane.showMessageDialog(null, "YOU WON! CONGRATS!");
             }
         };
 
-        JButton[] buttons = new JButton[91-65];
+        JButton[] buttons = new JButton[91 - 65];
 
         for (int i = 65; i < 91; i++) {
             var button = new JButton();
             button.setText(Character.toString(i));
-            button.setSize(30,30);
+            button.setSize(30, 30);
             button.setMargin(new Insets(0, 0, 0, 0));
             button.addActionListener(listener);
-            buttons[i-65] = button;
+            buttons[i - 65] = button;
         }
 
         positionButtons(buttons, 800, 2);
         return buttons;
     }
 
+    private void resetCounters() {
+        badGuesses = 0;
+        lettersGuessed = 0;
+    }
 
     public static void main(String[] args) {
 
@@ -149,7 +177,6 @@ public class MainWindow extends JFrame {
         });
 
     }
-
 
 
 }
