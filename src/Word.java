@@ -2,13 +2,14 @@ import java.util.Random;
 
 public class Word {
 
-    private String word = "OSCYLATOR";
+    private String word;
     private char[] letters;
-    private char[] lettersPackage;
+    private Lexicon lexicon;
 
 
     public Word(){
-        //word = lexicon.getRandomWord()
+        lexicon = new Lexicon();
+        word = lexicon.getWord();
         splitToLetters(word);
     }
 
@@ -17,4 +18,9 @@ public class Word {
     }
 
     public char[] getLettersPackage() { return letters; }
+
+    public void generateNewWord(){
+        word = lexicon.getWord();
+        splitToLetters(word);
+    }
 }

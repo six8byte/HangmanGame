@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class MainWindow extends JFrame {
 
-
+    private Word word;
     private JButton[] wordButtons;
     private JButton[] alphabet;
     private ArrayList<JButton> guessedButtons;
@@ -26,9 +26,6 @@ public class MainWindow extends JFrame {
         setImage();
         getContentPane().add(paintingLabel);
 
-
-        Lexicon lex = new Lexicon();
-        lex.msg();
 
         setTitle("Mężczyzna na szubienicy");
         setSize(1000, 1000);
@@ -57,7 +54,7 @@ public class MainWindow extends JFrame {
     }
 
     private JButton[] setWordButtons() {
-        Word word = new Word();
+        word = new Word();
         char[] letters = word.getLettersPackage();
         JButton[] buttons = new JButton[letters.length];
         for (int i = 0; i < letters.length; i++) {
@@ -134,6 +131,8 @@ public class MainWindow extends JFrame {
                 for (JButton x : wordButtons) {
                     x.setText("");
                 }
+                word.generateNewWord();
+                wordButtons = setWordButtons();
                 JOptionPane.showMessageDialog(null, "GAME OVER");
 
             } else {
@@ -145,6 +144,8 @@ public class MainWindow extends JFrame {
                 for (JButton x : wordButtons) {
                     x.setText("");
                 }
+                word.generateNewWord();
+                wordButtons = setWordButtons();
                 JOptionPane.showMessageDialog(null, "YOU WON! CONGRATS!");
             }
         };
