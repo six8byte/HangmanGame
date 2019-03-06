@@ -2,25 +2,26 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.ArrayList;
 
+//TODO: CLICKS ON SAME CORRECT LETTER RESULTS IN SCORE INCREMENTATION
+//TODO: WORD LETTERS ARE NOT DELETED FROM VIEW BEFORE ADDING NEW ONES
 
 public class MainWindow extends JFrame {
 
     private Word word;
     private JButton[] wordButtons;
-    private JButton[] alphabet;
-    private ArrayList<JButton> guessedButtons;
     private JLabel paintingLabel;
     private int lettersGuessed = 0;
     private int badGuesses = 0;
 
-    private MainWindow() {
+    private MainWindow() throws IOException {
 
         initUI();
     }
 
-    private void initUI() {
+    private void initUI() throws IOException {
         paintingLabel = new JLabel("");
         paintingLabel.setBounds(250, 10, 500, 600);
         setImage();
@@ -35,13 +36,13 @@ public class MainWindow extends JFrame {
         setResizable(false);
 
         wordButtons = setWordButtons();
-        for (int i = 0; i < wordButtons.length; i++) {
-            add(wordButtons[i]);
+        for (JButton wordButton : wordButtons) {
+            add(wordButton);
         }
 
-        alphabet = setAlphabet();
-        for (int i = 0; i < alphabet.length; i++) {
-            add(alphabet[i]);
+        JButton[] alphabet = setAlphabet();
+        for (JButton button : alphabet) {
+            add(button);
         }
 
     }
@@ -53,7 +54,7 @@ public class MainWindow extends JFrame {
         paintingLabel.setIcon(new ImageIcon(newImage));
     }
 
-    private JButton[] setWordButtons() {
+    private JButton[] setWordButtons() throws IOException {
         word = new Word();
         char[] letters = word.getLettersPackage();
         JButton[] buttons = new JButton[letters.length];
@@ -81,7 +82,7 @@ public class MainWindow extends JFrame {
         int rowsSpacing = 50;
         for (int i = 0; i < buttons.length; i++) {
             if (i % placeToSplit == 0) {
-                y += 50;
+                y += rowsSpacing;
             }
             buttons[i].setLocation(xes[i], y);
         }
@@ -126,26 +127,24 @@ public class MainWindow extends JFrame {
             }
 
             if (badGuesses > 11) {
-                resetCounters();
-                setImage();
-                for (JButton x : wordButtons) {
-                    x.setText("");
+                try {
+                    cleanUp();
+                    initUI();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
                 }
-                word.generateNewWord();
-                wordButtons = setWordButtons();
                 JOptionPane.showMessageDialog(null, "GAME OVER");
 
             } else {
                 setImage();
             }
             if (lettersGuessed == wordButtons.length + 1) {
-                resetCounters();
-                setImage();
-                for (JButton x : wordButtons) {
-                    x.setText("");
+                try {
+                    cleanUp();
+                    initUI();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
                 }
-                word.generateNewWord();
-                wordButtons = setWordButtons();
                 JOptionPane.showMessageDialog(null, "YOU WON! CONGRATS!");
             }
         };
@@ -165,6 +164,14 @@ public class MainWindow extends JFrame {
         return buttons;
     }
 
+    private void cleanUp() throws IOException {
+        word = null;
+        wordButtons = null;
+        paintingLabel = null;
+        lettersGuessed = 0;
+        badGuesses = 0;
+    }
+
     private void resetCounters() {
         badGuesses = 0;
         lettersGuessed = 0;
@@ -173,7 +180,12 @@ public class MainWindow extends JFrame {
     public static void main(String[] args) {
 
         EventQueue.invokeLater(() -> {
-            var exe = new MainWindow();
+            MainWindow exe = null;
+            try {
+                exe = new MainWindow();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             exe.setVisible(true);
         });
 
@@ -181,3 +193,4 @@ public class MainWindow extends JFrame {
 
 
 }
+

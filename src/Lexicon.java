@@ -7,36 +7,27 @@ import java.util.*;
 public class Lexicon {
 
     private String word;
-    private String path = "res/lexicon.txt";
-    private String[] kontener;
-    private String[] lines;
+    private String path = "res/words.txt";
+    private List<String> lines;
 
-    public void Lexicon() throws FileNotFoundException {
-
-        try {
-            lines = readLines("res/words.txt");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+    public Lexicon() throws IOException {
+        readLines(path);
     }
 
-    public String[] readLines(String filename) throws IOException {
-        FileReader fileReader = new FileReader(filename);
-        BufferedReader bufferedReader = new BufferedReader(fileReader);
-        List<String> lines = new ArrayList<String>();
-        String line = null;
-        while ((line = bufferedReader.readLine()) != null) {
-            lines.add(line);
+    private void readLines(String filename) throws IOException {
+        Scanner file = new Scanner(new File(filename));
+        lines = new ArrayList<>();
+
+        while (file.hasNextLine()) {
+            lines.add(file.nextLine());
         }
-        bufferedReader.close();
-        return lines.toArray(new String[lines.size()]);
+        file.close();
     }
 
     public String getWord(){
         Random r = new Random();
         int line = r.nextInt(10);
-        return lines[line];
+        return lines.get(line);
     }
 
 }

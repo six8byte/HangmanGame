@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.Random;
 
 public class Word {
@@ -7,7 +8,7 @@ public class Word {
     private Lexicon lexicon;
 
 
-    public Word(){
+    public Word() throws IOException {
         lexicon = new Lexicon();
         word = lexicon.getWord();
         splitToLetters(word);
