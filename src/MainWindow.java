@@ -1,3 +1,5 @@
+import com.sun.tools.javac.Main;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -166,15 +168,13 @@ public class MainWindow extends JFrame {
 
     private void cleanUp() throws IOException {
         word = null;
-        wordButtons = null;
-        paintingLabel = null;
+        for(JButton button : wordButtons ){
+            button.setVisible(false);
+            button = null;
+        }
         lettersGuessed = 0;
         badGuesses = 0;
-    }
-
-    private void resetCounters() {
-        badGuesses = 0;
-        lettersGuessed = 0;
+        setImage();
     }
 
     public static void main(String[] args) {
