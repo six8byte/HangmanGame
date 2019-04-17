@@ -10,10 +10,11 @@ import java.util.ArrayList;
 //TODO: CLICKS ON SAME CORRECT LETTER RESULTS IN SCORE INCREMENTATION
 //TODO: WORD LETTERS ARE NOT DELETED FROM VIEW BEFORE ADDING NEW ONES
 
+@SuppressWarnings("ALL")
 public class MainWindow extends JFrame {
 
     private Word word;
-    private JButton[] wordButtons;
+    private ArrayList<JButton> wordButtons;
     private JLabel paintingLabel;
     private int lettersGuessed = 0;
     private int badGuesses = 0;
@@ -42,7 +43,7 @@ public class MainWindow extends JFrame {
             add(wordButton);
         }
 
-        JButton[] alphabet = setAlphabet();
+        ArrayList<JButton> alphabet = setAlphabet();
         for (JButton button : alphabet) {
             add(button);
         }
@@ -56,37 +57,37 @@ public class MainWindow extends JFrame {
         paintingLabel.setIcon(new ImageIcon(newImage));
     }
 
-    private JButton[] setWordButtons() throws IOException {
+    private ArrayList<JButton> setWordButtons() throws IOException {
         word = new Word();
         char[] letters = word.getLettersPackage();
-        JButton[] buttons = new JButton[letters.length];
+        ArrayList<JButton> buttons = new ArrayList<JButton>(letters.length);
         for (int i = 0; i < letters.length; i++) {
             var button = new JButton();
             button.setName(Character.toString(letters[i]));
             button.setSize(30, 30);
             button.setMargin(new Insets(0, 0, 0, 0));
-            buttons[i] = button;
+            buttons.add(button);
         }
         positionButtons(buttons, 700);
         return buttons;
     }
 
-    private void positionButtons(JButton[] buttons, int y) {
-        var xes = calculateX(buttons.length);
-        for (int i = 0; i < buttons.length; i++) {
-            buttons[i].setLocation(xes[i], y);
+    private void positionButtons(ArrayList<JButton> buttons, int y) {
+        var xes = calculateX(buttons.size());
+        for (int i = 0; i < buttons.size(); i++) {
+            buttons.get(i).setLocation(xes[i], y);
         }
     }
 
-    private void positionButtons(JButton[] buttons, int y, int rows) {
-        var xes = calculateX(buttons.length, rows);
-        int placeToSplit = buttons.length / rows;
+    private void positionButtons(ArrayList<JButton> buttons, int y, int rows) {
+        var xes = calculateX(buttons.size(), rows);
+        int placeToSplit = buttons.size() / rows;
         int rowsSpacing = 50;
-        for (int i = 0; i < buttons.length; i++) {
+        for (int i = 0; i < buttons.size(); i++) {
             if (i % placeToSplit == 0) {
                 y += rowsSpacing;
             }
-            buttons[i].setLocation(xes[i], y);
+            buttons.get(i).setLocation(xes[i], y);
         }
     }
 
@@ -111,16 +112,16 @@ public class MainWindow extends JFrame {
         return xes;
     }
 
-    private JButton[] setAlphabet() {
+    private ArrayList<JButton> setAlphabet() {
 
 
         ActionListener listener = (ActionEvent e) -> {
             final JButton source = (JButton) e.getSource();
 
             int tmpLettersGuessed = lettersGuessed;
-            for (int i = 0; i < wordButtons.length; i++) {
-                if (source.getText().equals(wordButtons[i].getName())) {
-                    wordButtons[i].setText(wordButtons[i].getName());
+            for (int i = 0; i < wordButtons.size(); i++) {
+                if (source.getText().equals(wordButtons.get(i).getName())) {
+                    wordButtons.get(i).setText(wordButtons.get(i).getName());
                     lettersGuessed++;
                 }
             }
@@ -140,18 +141,19 @@ public class MainWindow extends JFrame {
             } else {
                 setImage();
             }
-            if (lettersGuessed == wordButtons.length + 1) {
+            if (lettersGuessed == wordButtons.size()) {
                 try {
+                    JOptionPane.showMessageDialog(null, "YOU WON! CONGRATS!");
                     cleanUp();
                     initUI();
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
-                JOptionPane.showMessageDialog(null, "YOU WON! CONGRATS!");
             }
         };
 
-        JButton[] buttons = new JButton[91 - 65];
+        ArrayList<JButton> buttons;
+        buttons = new ArrayList<JButton>(91 - 65);
 
         for (int i = 65; i < 91; i++) {
             var button = new JButton();
@@ -159,7 +161,7 @@ public class MainWindow extends JFrame {
             button.setSize(30, 30);
             button.setMargin(new Insets(0, 0, 0, 0));
             button.addActionListener(listener);
-            buttons[i - 65] = button;
+            buttons.add(button);
         }
 
         positionButtons(buttons, 800, 2);
@@ -170,11 +172,10 @@ public class MainWindow extends JFrame {
         word = null;
         for(JButton button : wordButtons ){
             button.setVisible(false);
-            button = null;
         }
+        wordButtons.clear();
         lettersGuessed = 0;
         badGuesses = 0;
-        setImage();
     }
 
     public static void main(String[] args) {
